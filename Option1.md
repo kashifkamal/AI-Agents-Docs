@@ -202,14 +202,22 @@ jobs:
 Pros and Cons of this Approach 
 Pros: 
 
-     Maximum Flexibility: You have full control over the prompt, the model parameters, and the logic for processing the response. This is essential for implementing a complex RAG workflow.
-     Model Agnostic: You can easily switch between providers (OpenAI, Anthropic, etc.) by changing the script and API key.
-     Access to Latest Features: You can use the latest features from a provider's API (like JSON mode, function calling, etc.) as soon as they are released, without waiting for a third-party GitHub Action to be updated.
+     Maximum Flexibility and Control: You have complete control over the entire process. This is essential for implementing a complex, multi-step logic like a RAG workflow, custom error handling, and precise output formatting.
+     Model Agnostic: You are not locked into a single provider. Switching between OpenAI, Anthropic, Google, or others requires only minor changes to your script and API key.
+     Access to Latest Features: You can leverage the newest features and parameters from a provider's API (e.g., advanced structured output, function calling) as soon as they are released, without waiting for a third-party action to be updated.
      
 
 Cons: 
 
-     Higher Complexity: Requires writing and maintaining custom code (the Python script).
-     Secret Management: You are responsible for securely storing and managing API keys as GitHub Secrets.
-     Boilerplate Code: You need to write the logic for API calls, error handling, and interacting with the GitHub API to post comments/issues.
+     Higher Complexity: Requires writing and maintaining custom code (e.g., a Python or Node.js script). This increases the development effort and the technical knowledge required to implement and manage the workflow.
+     More Boilerplate Code: You are responsible for writing all the "glue" code: making the HTTP request, parsing the JSON response, handling API errors, and then using the GitHub API to post comments or create issues.
+     Secret Management: You must manually create and manage API keys as GitHub Secrets, adding a small layer of administrative overhead compared to using the built-in GITHUB_TOKEN.
      
+
+Conclusion for Option 1 
+
+This approach is the most powerful and customizable option available. It provides the freedom to build a highly tailored and robust AI system that perfectly fits your specific requirements. 
+
+The primary trade-off is the increased development and maintenance effort. While Option 2 (Marketplace Actions) is faster for simple, one-off tasks, it quickly becomes rigid for complex workflows. For your use case—which requires a sophisticated RAG system, reliable structured JSON output, and the precise creation of an issue for a specific team—the flexibility of a custom script is not just a benefit; it's a necessity. 
+
+Therefore, Option 1 is an excellent and highly suitable choice for this project. It empowers you to build a solution that is both powerful and precise, ensuring the AI reviewer can perform its complex duties effectively, despite the higher initial setup cost. 
