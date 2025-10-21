@@ -1,0 +1,62 @@
+name: AI Documentation Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write # Required to create an issue
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        # We now need the Google Generative AI library
+        run: pip install google-generativeai
+
+      - name: Run POC Validation Script
+        id: ai_validation
+        env:
+          # Use the new Gemini API key
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Pass the path to your .adoc file in the repo
+          DOC_FILE_PATH: "docs/ascii-poc.adoc"
+        run: python .github/scripts/validate_docs.py
+
+      - name: Create Issue for Architects Team
+        if: steps.ai_validation.outputs.issue_body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueBody = `${{ steps.ai_validation.outputs.issue_body }}`;
+            const title = `POC: Documentation Update Required for PR #${{ github.event.number }}`;
+            
+            // Create the issue
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: issueBody,
+              labels: ['documentation', 'poc', 'ai-generated'],
+            });
+            
+            // Assign the Architects team
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.data.number,
+              assignees: ['@your-org/architects-team'] // Use the actual GitHub team slug
+            });
